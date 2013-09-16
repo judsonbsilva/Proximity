@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Teste - Proximity</title>
+		<style type="text/css">
+body {
+	font-family:Agency FB;
+	color:#fff;
+	font-size:40px;
+}
+.box {
+	float:left;
+	width:100px;
+	height:100px;
+	margin:10px;
+	text-align:center;
+	background:#589;
+}
+#a { background:rgb(100%,0%,0%) }
+#b { border-radius:0% }
+#logo {
+	position:fixed;
+	width:20%;
+	right:0;
+	bottom:0;
+}
+		</style>
+	</head>
+	<body>
+		<div id='a' class='box'>
+		</div>
+		<div id='b' class='box'>
+		</div>
+		<div id='c' class='box'>
+		</div>
+		<div id='d' class='box'>
+		</div>
+		<img id='logo' src='logo.png'/>
+		<script type='text/javascript' src='jquery.js'></script>
+		<script type='text/javascript' src='proximity.js'></script>
+		<script type='text/javascript'>
+$('#a').proximity({	background:'rgb(0%,0%,100%)' },100);
+$('#b').proximity({	borderRadius:'100%' },70);
+$('#c').proximity({	transform:'rotate(180deg)' },100);
+$('#d').proximity(function(ev){
+	$(this).text( (ev.m * 100).toFixed(2) )
+});
+		</script>
+	</body>	
+</html>
