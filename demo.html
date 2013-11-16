@@ -17,7 +17,7 @@ body {
 	text-align:center;
 	background:#589;
 }
-#a { background:rgb(100%,0%,0%) }
+#a { background:rgb(100%,0%,0%); border: solid 10px #aa5511; }
 #b { border-radius:0% }
 #logo {
 	position:fixed;
@@ -40,12 +40,14 @@ body {
 		<script type='text/javascript' src='jquery.js'></script>
 		<script type='text/javascript' src='proximity.js'></script>
 		<script type='text/javascript'>
-$('#a').proximity({	background:'rgb(0%,0%,100%)' },100);
-$('#b').proximity({	borderRadius:'100%' },70);
+$('#a').proximity(function( ev ){
+	$(this).text( ( ev.m * 100 ).toFixed(1) + '%' )
+}, 100);
+/*$('#b').proximity({	borderRadius:'100%' },70);
 $('#c').proximity({	transform:'rotate(180deg)' },100);
 $('#d').proximity(function(ev){
 	$(this).text( (ev.m * 100).toFixed(2) )
-});
+}); */
 		</script>
 	</body>	
 </html>

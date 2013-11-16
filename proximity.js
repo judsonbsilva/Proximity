@@ -5,160 +5,101 @@
 	var rCssValue = /([0-9.-]+)([a-z%]+)/ig,
 		digits = /[0-9.]+/g,
 		specials = {};
-	
-	if( $.browser.webkit ){
-		specials.transform = "-webkit-transform";
-	}
-	else if( $.browser.moz ){
-		specials.transform = "MozTransform";
-	}
-	else if( $.browser.opera ){
-		specials.transform = "OTransform";
-	}
-	else if( $.browser.ie ){
-		specials.transform = "-ms-transform"
-	};
 
-	function getOffset(el,inf){
+	var points = [],
+		indexElement = 0;
 
-		var offleft = ( el.offset() ).left,
-			offtop = ( el.offset() ).top,
-			width = ( el[0] ).offsetWidth,
-			height = ( el[0] ).offsetHeight;
+	specials.transform = (function(){
+		if( $.browser.webkit )
+			return '-webkit-transform';
+		else if( $.browser.moz )
+			return "MozTransform";
+		else if( $.browser.opera )
+			return "OTransform";
+		else if( $.browser.ie )
+			return "-ms-transform";
+	})();
 
-		return { 
-			width: width,
-			height: height,
-			left: offleft - inf,
-			right: width + offleft + inf ,
-			top: offtop - inf,
-			bottom: offtop + height + inf
+	/*  Recebe Page ( X, Y) do mouse, Offset ( left, top ), Offset ( right, bottom )
+		Retorna o percentual  */
+	function getPercent( a, b, c ){
+		/*  ( pageX - OffsetLeft ) / ( OffsetRight - OffsetLeft ) / 2 */
+		var tmp = ( a - b ) / ( ( c - b) / 2 ) || 0;
+		return tmp > 1 ? 2 - tmp: tmp;
+	}
+	/*  Recebe o elemento e área de influcência
+		Retorna objeto com offsets
+	  */
+	function getOffset( node , influence ){
+
+		var offleft = ( node.offset() ).left,
+			offtop = ( node.offset() ).top,
+			width = ( node[0] ).offsetWidth,
+			height = ( node[0] ).offsetHeight;
+
+		return {
+			left: offleft - influence,
+			right: width + offleft + influence ,
+			top: offtop - influence,
+			bottom: offtop + height + influence
 		};
 	};
 
-	function getOld(node, props){
-		
-		var newold = {};
-		
-		$.each(props,function( key,val ){
-			var oldvalue = '';
-			if( key in specials ) key = specials[key];
-			if ( node.style[key] && digits.test( node.style[key] ) ) oldvalue = node.style[key];
-			else if ( digits.test( $(node).css(key) ) ) oldvalue = $(node).css(key);
-			else oldvalue = '0';
-			newold[ key ] = [ oldvalue,val ];
-		});
-		return newold;
-	};
-
-	function magic( val,p ){
-		var ind = 0,
-			old = val[0].match( digits ),
-			val = val[1].replace(rCssValue,function(exp,num,unit){
-				old[ind] = old[ind] || '0';
-				var finalvalue = Number(old[ind]) + ( Number(num) - Number(old[ind]) ) * p;
-				ind++;
-				return finalvalue + unit;
-			});
-		return val;
-	};
-
-	var countId = 0;
-
-	$.fn.proximity = function( fn,inf ){
-		
-		inf = inf ? parseFloat(inf): 50;
+	$.fn.proximity = function( fn , options ){
 
 		var _this = this,
-			autom = false,
 			_window = $(window);
 
+		options = options ? options : 50;
+		
 		if( fn.constructor == Object ){
-			
-			$.each(_this, function(){
-				$(this).data('props', getOld( this, fn) );
-			});
+			fn = function(a){ console.log(a) }
+		}
 
-			fn = function(ev){
-				
-				var element = $(this);
-					props = element.data('props');
+		$.each( _this, function(){
+		
+			var element = $(this),
+				position = getOffset( element , options * 2 );
 
-				$.each(props, function(key,val){
-					element.css(key, magic(val,ev.m) );
-				});
+			if( fn == 'off' ){
+				var index = element.data('proximity-index');
+					element.removeData('proximity-index');
+				delete points[index];
+				return;
+			}
 
-			}; 
+			position.callback = fn;
+			position.node = this;
 
-		} else if( fn == 'off' ){
-			
-			$.each(_this,function(){
-				var node = $( this );
-				node.each(function(){
-					_window.off(
-						"mousemove.proximity" + node.data( "id-prox" )
-					);
-				});
-			});
+			points[indexElement] = position;
 
-			return _this;
-
-		} else if ( !fn ) return _this;
-
-		$.each( _this,function(cont){
-			
-			var node = $(this),
-				px = 0, py = 0, countZero = 0,
-				mouse = {},
-				sizes = getOffset( node , inf * 2 );
-
-			if( !node.data('id-prox') ) node.data('id-prox', countId++ );
-			
-			_window.on('mousemove.proximity' + node.data('id-prox'),function(ev){
-						
-				mouse = {
-					x: ev.pageX,
-					y: ev.pageY
-				};
-
-				var exp1 = mouse.x >= sizes.left && mouse.x <= sizes.right;
-				var exp2 = mouse.y >= sizes.top && mouse.y <= sizes.bottom;
-						
-				if( exp1 && exp2 ){	
-					
-					px =( mouse.x - sizes.left ) / ( (sizes.right - sizes.left)/2 ) || 0;
-					px = px > 1 ? 2 - px: px;
-						
-					py =( mouse.y - sizes.top ) / ( (sizes.bottom - sizes.top)/2 ) || 0;
-					py = py > 1 ? 2 - py: py;
-							
-					fn.call( node[0] ,{ 
-						x:px, y:py,	m: px*py
-					});
-					countZero = 0;
-
-				} else {
-					if( countZero < 3){
-						fn.call( node[0] ,{ 
-							x:0, y:0,  m:0
-						});
-						countZero++;
-					};
-				};
-				return null;
-			});
+			element.data('proximity-index', indexElement);
+			indexElement++;
 		});
 
-		var countScroll = 0,
-			alter = function(ev){
-				countScroll = countScroll == 10 ? 0: countScroll + 1;
-				countScroll = ev.type == 'resize' ? 5: countScroll;
-				if( countScroll == 5 ){
-					$(_this).proximity('off').proximity( fn, inf );
-				};
-			};
+		_window.on('mousemove', function( event ){
+			points.forEach(function( point ){
+				//Se estiver no campo de influencia deste elemento
+				if(	event.pageX >= point.left && event.pageY >= point.top &&
+					event.pageX <= point.right && event.pageY <= point.bottom ){
+					
+					var px = getPercent( event.pageX, point.left, point.right ),
+						py = getPercent( event.pageY, point.top, point.bottom );
 
-		_window.scroll(alter).resize(alter);
+					point.callback.call( point.node , { x: px, y:py, m: px*py });
+				} else point.callback.call( point.node , { x: 0, y: 0, m: 0});
+			});
+		});
+		
+		//Mudas os points dos elemento ao rolar a barra, ou redimensionar
+		function changeOffset(){
+			points.forEach(function( point, index ){
+				points[point.element.index] = $.extend( point, getOffset( point.element ) ); 
+			});
+		}
+
+		_window.scroll(changeOffset);
+		_window.resize(changeOffset);
 
 		return _this;
 	};
