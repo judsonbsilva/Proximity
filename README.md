@@ -1,3 +1,5 @@
+![alt text](http://judsonbsilva.github.io/Proximity/logo.png "Logo Title")
+
 Proximity
 =========
 
