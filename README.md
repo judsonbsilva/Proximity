@@ -8,7 +8,7 @@ A new mouse event to you use with this jquery plugin! know when the mouse is nea
 npm package
 
 ```sh
-	npm install -g bower
+	npm install jquery-proximity --save
 ```
 or bower component
 
