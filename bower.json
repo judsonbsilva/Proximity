@@ -1,0 +1,27 @@
+{
+  "name": "proximity",
+  "version": "0.0.1",
+  "homepage": "https://github.com/judsonbsilva/Proximity",
+  "authors": [
+    "Judson Silva <judsonbarroso@gmail.com>"
+  ],
+  "description": "A jQuery Plugin to get the proximity of mouse in a element",
+  "main": "dist/proximity.min.js",
+  "keywords": [
+    "proximity",
+    "mouse",
+    "event",
+    "jquery",
+    "judson",
+    "judson",
+    "silva"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "jquery-proximity",
+  "version": "0.0.1",
+  "description": "A jQuery Plugin to get the proximity of mouse in a element",
+  "main": "dist/proximity.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/judsonbsilva/Proximity.git"
+  },
+  "keywords": [
+    "proximity",
+    "jquery",
+    "judson",
+    "silva",
+    "judson",
+    "mouse",
+    "event"
+  ],
+  "author": "Judson Silva",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/judsonbsilva/Proximity/issues"
+  },
+  "homepage": "https://github.com/judsonbsilva/Proximity#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "jquery": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.3",
+    "jshint": "^2.9.1"
+  }
+}

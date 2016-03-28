@@ -2,23 +2,8 @@
 
 (function($,undefined){
 
-	var rCssValue = /([0-9.-]+)([a-z%]+)/ig,
-		digits = /[0-9.]+/g,
-		specials = {};
-
 	var points = [],
 		indexElement = 0;
-
-	specials.transform = (function(){
-		if( $.browser.webkit )
-			return '-webkit-transform';
-		else if( $.browser.moz )
-			return "MozTransform";
-		else if( $.browser.opera )
-			return "OTransform";
-		else if( $.browser.ie )
-			return "-ms-transform";
-	})();
 
 	/*  Recebe Page ( X, Y) do mouse, Offset ( left, top ), Offset ( right, bottom )
 		Retorna o percentual  */

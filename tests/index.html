@@ -5,7 +5,7 @@
 		<title>Teste - Proximity</title>
 		<style type="text/css">
 body {
-	font-family:Agency FB;
+	font-family:Agency FB, sans-serif;
 	color:#fff;
 	font-size:40px;
 }
@@ -28,8 +28,6 @@ body {
 		</style>
 	</head>
 	<body>
-		<div id='a' class='box'>
-		</div>
 		<div id='b' class='box'>
 		</div>
 		<div id='c' class='box'>
@@ -37,17 +35,18 @@ body {
 		<div id='d' class='box'>
 		</div>
 		<img id='logo' src='logo.png'/>
-		<script type='text/javascript' src='jquery.js'></script>
-		<script type='text/javascript' src='proximity.js'></script>
+		<script type='text/javascript' src='../node_modules/jquery/dist/jquery.min.js'></script>
+		<script type='text/javascript' src='../dist/proximity.min.js'></script>
 		<script type='text/javascript'>
-$('#a').proximity(function( ev ){
-	$(this).text( ( ev.m * 100 ).toFixed(1) + '%' )
-}, 100);
-/*$('#b').proximity({	borderRadius:'100%' },70);
-$('#c').proximity({	transform:'rotate(180deg)' },100);
+$('#b').proximity(function( ev ){
+	$(this).css('border-radius', ( ev.m * 100 ) + '%');
+},70);
+$('#c').proximity(function( ev ){
+	$(this).css('transform', 'rotate(' + (180 * ev.m ) + 'deg)');
+},100);
 $('#d').proximity(function(ev){
 	$(this).text( (ev.m * 100).toFixed(2) )
-}); */
+});
 		</script>
 	</body>	
 </html>
