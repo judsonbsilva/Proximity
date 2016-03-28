@@ -1,11 +1,28 @@
 Proximity
 =========
 
-Um novo evento para você utilizar com este plugin jQuery! Saiba quando o mouse está chegando perto de um determinado elemento!
+A new mouse event to you use with this jquery plugin! know when the mouse is near
 
-Exemplo do uso:
+## Installation
+
+npm package
+
+```sh
+	npm install -g bower
+```
+or bower component
+
+```sh
+	bower install proximity --save
+```
+
+## Example
+
+You can see a demo here:
+[http://judsonbsilva.github.io/Proximity/](http://judsonbsilva.github.io/Proximity/)
+
 ```javascript
-$('#elemento').proximity(function( infos ){
-	console.log( infos.m * 100 + '%');
-});
+	$('#node').proximity(function( info ){
+		console.log( info.m * 100 + '%');
+	});
 ```
