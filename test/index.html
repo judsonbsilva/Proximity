@@ -35,24 +35,9 @@ body {
 		</div>
 		<div id='d' class='box'>
 		</div>
-		<script type='text/javascript' src='../node_modules/jquery/dist/jquery.min.js'></script>
 		<script type='text/javascript' src='../node_modules/lodash/lodash.min.js'></script>
 		<script type='text/javascript' src='../dist/proximity.js'></script>
 		<script type='text/javascript'>
-
-$('#b').proximity(function(p){
-	$(this).css('border-radius', ( p* 100 ) + '%');
-},70);
-
-$('#c').proximity(function(p){
-	$(this).css('transform', 'rotate(' + (180 * p ) + 'deg)');
-},100);
-
-$('#d').proximity(function(p){
-	$(this).text( (p * 100).toFixed(2) )
-});
-
-/*
 Proximity.observe(
 	document.querySelector('#b'), 70, function(p){
 		this.style.borderRadius = ( p * 100 ) + '%';
@@ -70,7 +55,6 @@ Proximity.observe(
 		this.innerText = (p * 100).toFixed(2);
 	}
 );
-*/
 		</script>
 	</body>	
 </html>
