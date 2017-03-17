@@ -1,92 +1,105 @@
-/*	Proximity - by: Judson Silva */
+'use strict';
 
-(function($,undefined){
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var points = [],
-		indexElement = 0;
+var Proximity = {};
 
-	/*  Recebe Page ( X, Y) do mouse, Offset ( left, top ), Offset ( right, bottom )
-		Retorna o percentual  */
-	function getPercent( a, b, c ){
-		/*  ( pageX - OffsetLeft ) / ( OffsetRight - OffsetLeft ) / 2 */
-		var tmp = ( a - b ) / ( ( c - b) / 2 ) || 0;
-		return tmp > 1 ? 2 - tmp: tmp;
-	}
-	/*  Recebe o elemento e área de influcência
-		Retorna objeto com offsets
-	  */
-	function getOffset( node , influence ){
+// Position of observed elements and distance of relevance
+Proximity._points = [/* isActive, X, Y, Distance */];
+Proximity._callbackList = [/* Callback functions */];
+Proximity._nodes = [/* Observed node elements */];
 
-		var offleft = ( node.offset() ).left,
-			offtop = ( node.offset() ).top,
-			width = ( node[0] ).offsetWidth,
-			height = ( node[0] ).offsetHeight;
+Proximity._getRelevantDistances = function (pageX, pageY) {
 
-		return {
-			left: offleft - influence,
-			right: width + offleft + influence ,
-			top: offtop - influence,
-			bottom: offtop + height + influence
-		};
-	};
+	_.forEach(Proximity._points, function (element, index) {
+		// Ignore inactive elements
+		if (!element[0]) return;
 
-	$.fn.proximity = function( fn , options ){
+		var relevantDistance = element[3];
 
-		var _this = this,
-			_window = $(window);
+		// Pythagorean theorem
+		var distance = Math.sqrt(Math.pow(element[1] - pageX, 2) + Math.pow(element[2] - pageY, 2));
 
-		options = options ? options : 50;
-		
-		if( fn.constructor == Object ){
-			fn = function(a){ console.log(a) }
-		}
+		// If mouse is in a relevant area
+		if (distance <= relevantDistance) Proximity._beforeCallback(index, 1 - distance / relevantDistance);else if (distance - relevantDistance <= 10) Proximity._beforeCallback(index, 0);
+	});
+};
 
-		$.each( _this, function(){
-		
-			var element = $(this),
-				position = getOffset( element , options * 2 );
+Proximity._beforeCallback = function (index, percent) {
+	// Call callback
+	Proximity._callbackList[index].call(Proximity._nodes[index], percent);
+};
 
-			if( fn == 'off' ){
-				var index = element.data('proximity-index');
-					element.removeData('proximity-index');
-				delete points[index];
-				return;
-			}
+Proximity._handlerMouseMove = function (event) {
+	Proximity._getRelevantDistances(event.pageX, event.pageY);
+};
 
-			position.callback = fn;
-			position.node = this;
+Proximity._active = function () {
+	window.addEventListener('mousemove', Proximity._handlerMouseMove);
+};
 
-			points[indexElement] = position;
+/**
+ * @function ProximityObserve
+ * @param  {HTML DOM Node}   nodeElement  HTML node element to observe
+ * @param  {Number}   relevance           Cricle radio of relevance area 
+ * @param  {Function} callback            Action called when mouse is in relevant area passing the percent of center distance of element
+ * @return {null}
+ */
+Proximity.observe = function (nodeElement, relevance, callback) {
 
-			element.data('proximity-index', indexElement);
-			indexElement++;
-		});
+	if (!nodeElement || (typeof nodeElement === 'undefined' ? 'undefined' : _typeof(nodeElement)) != 'object' || !relevance || relevance.constructor != Number || !callback || callback.constructor != Function) throw new Error("Proximity.observe: invalid argument");
 
-		_window.on('mousemove', function( event ){
-			points.forEach(function( point ){
-				//Se estiver no campo de influencia deste elemento
-				if(	event.pageX >= point.left && event.pageY >= point.top &&
-					event.pageX <= point.right && event.pageY <= point.bottom ){
-					
-					var px = getPercent( event.pageX, point.left, point.right ),
-						py = getPercent( event.pageY, point.top, point.bottom );
+	// Define node as active
+	var points = [true];
+	// Define X coordinate
+	points.push(nodeElement.offsetHeight / 2 + nodeElement.offsetLeft);
+	// Define Y coordinate
+	points.push(nodeElement.offsetWidth / 2 + nodeElement.offsetTop);
+	// Define relevance. 100px is default
+	points.push(relevance || 100);
 
-					point.callback.call( point.node , { x: px, y:py, m: px*py });
-				} else point.callback.call( point.node , { x: 0, y: 0, m: 0});
-			});
-		});
-		
-		//Mudas os points dos elemento ao rolar a barra, ou redimensionar
-		function changeOffset(){
-			points.forEach(function( point, index ){
-				points[point.element.index] = $.extend( point, getOffset( point.element ) ); 
-			});
-		}
+	nodeElement.proximityIndex = Proximity._points.length;
 
-		_window.scroll(changeOffset);
-		_window.resize(changeOffset);
+	Proximity._points.push(points);
+	Proximity._callbackList.push(callback);
+	Proximity._nodes.push(nodeElement);
+};
 
-		return _this;
-	};
-	
-})(jQuery);
+/**
+ * @function ProximityDisable
+ * @param  {HTML DOM Node} nodeElement to disable proximity mouse observer
+ * @return {null}
+ */
+Proximity.disable = function (nodeElement) {
+
+	if (!nodeElement.hasOwnProperty('proximityIndex')) throw new Error('Proximity.disable: node element not observed');
+
+	var index = Number(nodeElement.proximityIndex);
+	// Set 'isActive' as false
+	Proximity._points[index][0] = false;
+};
+/**
+ * @function ProximityEnable
+ * @param  {HTML DOM Node} nodeElement to enable proximity mouse observer
+ * @return {null}
+ */
+Proximity.enable = function (nodeElement) {
+	if (!nodeElement.hasOwnProperty('proximityIndex')) throw new Error('Proximity.disable: node element not observed');
+
+	var index = Number(nodeElement.proximityIndex);
+	// Set 'isActive' as true
+	Proximity._points[index][0] = true;
+};
+
+// If is in browser
+if (window) {
+	Proximity._active();
+	window.Proximity = Proximity;
+}
+'use strict';
+
+jQuery.fn.proximity = function (fn, relevance) {
+	_.forEach(this, function (nodeElement) {
+		if (fn == 'disable') Proximity.disable(nodeElement);else if (fn == 'enable') Proximity.enable(nodeElement);else Proximity.observe(nodeElement, relevance || 100, fn);
+	});
+};

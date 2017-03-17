@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Teste - Proximity</title>
+		<style type="text/css">
+body {
+	font-family:Agency FB, sans-serif;
+	color:#fff;
+	font-size:40px;
+	height: 2000px;
+}
+.box {
+	float:left;
+	width:100px;
+	height:100px;
+	margin:10px;
+	text-align:center;
+	background:#589;
+}
+#a { background:rgb(100%,0%,0%); border: solid 10px #aa5511; }
+#b { border-radius:0% }
+#logo {
+	position:fixed;
+	width:20%;
+	right:0;
+	bottom:0;
+}
+		</style>
+	</head>
+	<body>
+		<div id='b' class='box'>
+		</div>
+		<div id='c' class='box'>
+		</div>
+		<div id='d' class='box'>
+		</div>
+		<script type='text/javascript' src='../node_modules/lodash/lodash.min.js'></script>
+		<script type='text/javascript' src='../dist/proximity.js'></script>
+		<script type='text/javascript'>
+Proximity.observe(
+	document.querySelector('#b'), 70, function(p){
+		this.style.borderRadius = ( p * 100 ) + '%';
+	}
+);
+
+Proximity.observe(
+	document.querySelector('#c'), 100, function(p){
+		this.style.transform = 'rotate(' + (180 * p ) + 'deg)';
+	}
+);
+
+Proximity.observe(
+	document.querySelector('#d'), 200, function(p){
+		this.innerText = (p * 100).toFixed(2);
+	}
+);
+		</script>
+	</body>	
+</html>
