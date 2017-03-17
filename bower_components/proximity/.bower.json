@@ -12,7 +12,6 @@
     "event",
     "jquery",
     "judson",
-    "judson",
     "silva"
   ],
   "license": "MIT",
@@ -23,13 +22,13 @@
     "test",
     "tests"
   ],
-  "_release": "5e3aab7ea0",
+  "_release": "9ac6d5d207",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "5e3aab7ea0c22cbab7b5c1d3088a91904cda695e"
+    "commit": "9ac6d5d207c8bc20bad38074ed4df1aebeb03209"
   },
-  "_source": "git://github.com/judsonbsilva/Proximity.git",
+  "_source": "https://github.com/judsonbsilva/Proximity.git",
   "_target": "*",
   "_originalSource": "proximity",
   "_direct": true

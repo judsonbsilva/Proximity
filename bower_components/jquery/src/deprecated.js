@@ -1,6 +1,9 @@
 define( [
-	"./core"
-], function( jQuery ) {
+	"./core",
+	"./core/nodeName"
+], function( jQuery, nodeName ) {
+
+"use strict";
 
 jQuery.fn.extend( {
 
@@ -21,12 +24,17 @@ jQuery.fn.extend( {
 			this.off( selector, "**" ) :
 			this.off( types, selector || "**", fn );
 	},
-	size: function() {
-		return this.length;
+	holdReady: function( hold ) {
+		if ( hold ) {
+			jQuery.readyWait++;
+		} else {
+			jQuery.ready( true );
+		}
 	}
 } );
 
-jQuery.fn.andSelf = jQuery.fn.addBack;
+jQuery.isArray = Array.isArray;
+jQuery.parseJSON = JSON.parse;
+jQuery.nodeName = nodeName;
 
 } );
-
