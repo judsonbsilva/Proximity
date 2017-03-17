@@ -25,7 +25,9 @@
     "url": "https://github.com/judsonbsilva/Proximity/issues"
   },
   "homepage": "https://github.com/judsonbsilva/Proximity#readme",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "devDependencies": {
     "jquery": "^2.2.2",
     "gulp": "^3.9.1",

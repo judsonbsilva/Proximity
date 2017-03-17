@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Teste - Proximity</title>
+		<style type="text/css">
+body {
+	font-family:Agency FB, sans-serif;
+	color:#fff;
+	font-size:40px;
+}
+.box {
+	float:left;
+	width:100px;
+	height:100px;
+	margin:10px;
+	text-align:center;
+	background:#589;
+}
+#a { background:rgb(100%,0%,0%); border: solid 10px #aa5511; }
+#b { border-radius:0% }
+#logo {
+	position:fixed;
+	width:20%;
+	right:0;
+	bottom:0;
+}
+		</style>
+	</head>
+	<body>
+		<div id='b' class='box'>
+		</div>
+		<div id='c' class='box'>
+		</div>
+		<div id='d' class='box'>
+		</div>
+		<img id='logo' src='logo.png'/>
+		<script type='text/javascript' src='../node_modules/jquery/dist/jquery.min.js'></script>
+		<script type='text/javascript' src='../node_modules/lodash/lodash.min.js'></script>
+		<script type='text/javascript' src='../src/Proximity.js'></script>
+		<script type='text/javascript' src='../src/main.js'></script>
+		<script type='text/javascript'>
+$('#b').proximity(function( ev ){
+	$(this).css('border-radius', ( ev.m * 100 ) + '%');
+},70);
+$('#c').proximity(function( ev ){
+	$(this).css('transform', 'rotate(' + (180 * ev.m ) + 'deg)');
+},100);
+$('#d').proximity(function(ev){
+	$(this).text( (ev.m * 100).toFixed(2) )
+});
+		</script>
+	</body>	
+</html>
