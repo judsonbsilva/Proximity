@@ -1,17 +1,17 @@
-var Proximity = {};
+const Proximity = {};
 
 // Position of observed elements and distance of relevance
-Proximity.points = [ /* isActive, X, Y, Distance */ ];
+Proximity._points = [ /* isActive, X, Y, Distance */ ];
+Proximity._callbackList = [ /* Callback functions */ ];
+Proximity._nodes = [ /* Observed node elements */ ];
 
-Proximity.callbackList = [ /* Callback functions */ ];
-Proximity.nodes = [ /* Observed node elements */ ];
-
-Proximity.getRelevantDistances = function(pageX, pageY){
-	_.forEach(Proximity.points, function( element, index){
+Proximity._getRelevantDistances = (pageX, pageY) => {
+	
+	_.forEach(Proximity._points, (element, index) => {
 		// Ignore inactive elements
 		if( !element[0] ) return;
 
-		var relevantDistance = element[3];
+		let relevantDistance = element[3];
 
 		// Pythagorean theorem
 		var distance = Math.sqrt(
@@ -26,14 +26,18 @@ Proximity.getRelevantDistances = function(pageX, pageY){
 	});
 };
 
-Proximity._beforeCallback = function(index, percent){
+Proximity._beforeCallback = (index, percent) => {
 	// Call callback
-	( Proximity.callbackList[index] ).call( Proximity.nodes[index], percent);
+	( Proximity._callbackList[index] ).call( Proximity._nodes[index], percent);
 };
 
-Proximity._handlerMouseMove = function(event){
-	Proximity.getRelevantDistances(event.pageX, event.pageY);
+Proximity._handlerMouseMove = (event) => {
+	Proximity._getRelevantDistances(event.pageX, event.pageY);
 };
+
+Proximity._active = () => {
+	window.addEventListener('mousemove', Proximity._handlerMouseMove);
+}
 
 /**
  * @function ProximityObserve
@@ -42,7 +46,7 @@ Proximity._handlerMouseMove = function(event){
  * @param  {Function} callback            Action called when mouse is in relevant area passing the percent of center distance of element
  * @return {null}
  */
-Proximity.observe = function( nodeElement, relevance, callback ){
+Proximity.observe = (nodeElement, relevance, callback ) => {
 	
 	if(
 		!nodeElement || typeof nodeElement != 'object' ||
@@ -52,7 +56,7 @@ Proximity.observe = function( nodeElement, relevance, callback ){
 		throw new Error("Proximity.observe: invalid argument");
 
 	// Define node as active
-	var points = [true];
+	let points = [true];
 	// Define X coordinate
 	points.push( nodeElement.offsetHeight/2 + nodeElement.offsetLeft );
 	// Define Y coordinate
@@ -60,11 +64,11 @@ Proximity.observe = function( nodeElement, relevance, callback ){
 	// Define relevance. 100px is default
 	points.push( relevance || 100 );
 
-	nodeElement.proximityIndex = Proximity.points.length;
+	nodeElement.proximityIndex = Proximity._points.length;
 
-	Proximity.points.push(points);
-	Proximity.callbackList.push(callback);
-	Proximity.nodes.push(nodeElement);
+	Proximity._points.push(points);
+	Proximity._callbackList.push(callback);
+	Proximity._nodes.push(nodeElement);
 }
 
 /**
@@ -72,32 +76,33 @@ Proximity.observe = function( nodeElement, relevance, callback ){
  * @param  {HTML DOM Node} nodeElement to disable proximity mouse observer
  * @return {null}
  */
-Proximity.disable = function(nodeElement){
+Proximity.disable = (nodeElement) => {
 	
 	if( !nodeElement.hasOwnProperty('proximityIndex') )
 		throw new Error('Proximity.disable: node element not observed');
 
-	var index = Number(nodeElement.proximityIndex);
+	let index = Number(nodeElement.proximityIndex);
 	// Set 'isActive' as false
-	Proximity.points[index][0] = false;
+	Proximity._points[index][0] = false;
 };
 /**
  * @function ProximityEnable
  * @param  {HTML DOM Node} nodeElement to enable proximity mouse observer
  * @return {null}
  */
-Proximity.enable = function(nodeElement){	
+Proximity.enable = (nodeElement) => {	
 	if( !nodeElement.hasOwnProperty('proximityIndex') )
 		throw new Error('Proximity.disable: node element not observed');
 
-	var index = Number(nodeElement.proximityIndex);
+	let index = Number(nodeElement.proximityIndex);
 	// Set 'isActive' as true
-	Proximity.points[index][0] = true;
+	Proximity._points[index][0] = true;
 };
+
+
 
 // If is in browser
 if( window ){
-	// When mouse move
-	window.addEventListener('mousemove', Proximity._handlerMouseMove);
+	Proximity._active();
 	window.Proximity = Proximity;
 }
